@@ -85,7 +85,7 @@ while True:
             case 'debug':
                 debug = int(el[1])
             case 'reset':
-                s=10; o=[0,0]; r=0; d=1; dr=[0,0]; t=10; debug=0
+                s=10; o=[0,0]; r=0; d=3; dr=[10,10]; t=10; debug=0
             case _:
                 if debug==1: print('[D] [W] Неизвестный параметр',el[0],'пропускаем')
 
