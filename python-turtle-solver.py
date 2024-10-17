@@ -84,6 +84,8 @@ while True:
                 t = int(el[1])
             case 'debug':
                 debug = int(el[1])
+            case 'reset':
+                s=10; o=[0,0]; r=0; d=1; dr=[0,0]; t=10; debug=0
             case _:
                 if debug==1: print('[D] [W] Неизвестный параметр',el[0],'пропускаем')
 
@@ -100,7 +102,7 @@ while True:
     else:
         tracer(t,0) #альтернативный метод побыстрее
 
-    right(r); up(); goto(o[0],o[1]); down()
+    right(r); up(); goto(o[0]*k,o[1]*k); down()
 
     CommandsSolver(Commands)
     if debug==1: print('[D] Конец программы')
@@ -110,5 +112,5 @@ while True:
     # Повтор
     UserInput = input('Перезапустить? (Д/Н): ')
     if not(UserInput=='Д' or UserInput=='д' or UserInput=='Y' or UserInput=='y' or UserInput=='1'): break
-    
+
 done()
