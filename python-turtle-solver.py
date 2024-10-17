@@ -102,7 +102,7 @@ while True:
     else:
         tracer(t,0) #альтернативный метод побыстрее
 
-    right(r); up(); goto(o[0]*k,o[1]*k); down()
+    right(r); up(); goto(o[0]*s,o[1]*s); down()
 
     CommandsSolver(Commands)
     if debug==1: print('[D] Конец программы')
