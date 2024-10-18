@@ -33,7 +33,20 @@ def CommandsSolver(Commands):
                 index+=3
 
             case 'Повтори':
-                IteratedInstructions = Commands[Commands.index('[')+1:len(Commands)-(Commands[::-1]).index(']')-1]
+                IteratedInstructions = Commands[Commands.index('[')+1:]
+
+                # Поиск границ цикла
+                IteratedInstructionsBuffer = IteratedInstructions.copy()
+                while True: # Скорее всего, это всё можно сделать как то лучше, но мне как то лень над этим думать
+                    try:
+                        BracketIndex=IteratedInstructionsBuffer.index('[')
+                    except:
+                        break
+                    IteratedInstructionsBuffer[BracketIndex]=''
+                    IteratedInstructionsBuffer[IteratedInstructionsBuffer.index(']',BracketIndex)]=''
+                BracketIndex=IteratedInstructionsBuffer.index(']')
+
+                IteratedInstructions = IteratedInstructions[:BracketIndex]
                 if debug==1: print('[D] Инструкции цикла:', IteratedInstructions)
                 for i in range(int(Commands[index+1])):
                     if debug==1: print('[D] Итерация номер', i,':')
