@@ -4,59 +4,60 @@ def CommandsSolver(Commands):
     index=0
     while index < len(Commands):
         if debug==1: print('[D] Индекс:', index, ', Инструкция:', Commands[index])
-        match Commands[index]:
-            case 'Вперёд':
-                forward(int(Commands[index+1])*s)
-                index+=2
-            case 'Назад':
-                backward(int(Commands[index+1])*s)
-                index+=2
-            case 'Направо':
-                right(int(Commands[index+1]))
-                index+=2
-            case 'Налево':
-                left(int(Commands[index+1]))
-                index+=2
 
-            case 'Поднять':
-                up()
-                index+=2
-            case 'Опустить':
-                down()
-                index+=2
+        Command = Commands[index]
+        if Command == 'Вперёд':
+            forward(int(Commands[index+1])*s)
+            index+=2
+        elif Command == 'Назад':
+            backward(int(Commands[index+1])*s)
+            index+=2
+        elif Command == 'Направо':
+            right(int(Commands[index+1]))
+            index+=2
+        elif Command == 'Налево':
+            left(int(Commands[index+1]))
+            index+=2
 
-            case 'Сместиться':
-                Coordinates=Commands[index+2]
-                Coordinates=(Coordinates[1:len(Coordinates)-1]).split(',')
-                if debug==1: print('[D] Координаты перемещения:', Coordinates)
-                goto(xcor()+int(Coordinates[0])*s,ycor()+int(Coordinates[1])*s)
-                index+=3
+        elif Command == 'Поднять':
+            up()
+            index+=2
+        elif Command == 'Опустить':
+            down()
+            index+=2
 
-            case 'Повтори':
-                IteratedInstructions = Commands[Commands.index('[')+1:]
+        elif Command == 'Сместиться':
+            Coordinates=Commands[index+2]
+            Coordinates=(Coordinates[1:len(Coordinates)-1]).split(',')
+            if debug==1: print('[D] Координаты перемещения:', Coordinates)
+            goto(xcor()+int(Coordinates[0])*s,ycor()+int(Coordinates[1])*s)
+            index+=3
 
-                # Поиск границ цикла
-                IteratedInstructionsBuffer = IteratedInstructions.copy()
-                while True: # Скорее всего, это всё можно сделать как то лучше, но мне как то лень над этим думать
-                    try:
-                        BracketIndex=IteratedInstructionsBuffer.index('[')
-                    except:
-                        break
-                    IteratedInstructionsBuffer[BracketIndex]=''
-                    IteratedInstructionsBuffer[IteratedInstructionsBuffer.index(']',BracketIndex)]=''
-                BracketIndex=IteratedInstructionsBuffer.index(']')
+        elif Command == 'Повтори':
+            IteratedInstructions = Commands[Commands.index('[')+1:]
 
-                IteratedInstructions = IteratedInstructions[:BracketIndex]
-                if debug==1: print('[D] Инструкции цикла:', IteratedInstructions)
-                for i in range(int(Commands[index+1])):
-                    if debug==1: print('[D] Итерация номер', i,':')
-                    CommandsSolver(IteratedInstructions)
-                if debug==1: print('[D] Конец цикла, индекс', index)
-                index+=4+len(IteratedInstructions)
+            # Поиск границ цикла
+            IteratedInstructionsBuffer = IteratedInstructions.copy()
+            while True: # Скорее всего, это всё можно сделать как то лучше, но мне как то лень над этим думать
+                try:
+                    BracketIndex=IteratedInstructionsBuffer.index('[')
+                except:
+                    break
+                IteratedInstructionsBuffer[BracketIndex]=''
+                IteratedInstructionsBuffer[IteratedInstructionsBuffer.index(']',BracketIndex)]=''
+            BracketIndex=IteratedInstructionsBuffer.index(']')
+
+            IteratedInstructions = IteratedInstructions[:BracketIndex]
+            if debug==1: print('[D] Инструкции цикла:', IteratedInstructions)
+            for i in range(int(Commands[index+1])):
+                if debug==1: print('[D] Итерация номер', i,':')
+                CommandsSolver(IteratedInstructions)
+            if debug==1: print('[D] Конец цикла, индекс', index)
+            index+=4+len(IteratedInstructions)
             
-            case _:
-                print('ОШИБКА: неизвестная команда', Commands[index], 'на индексе', index)
-                break
+        else:
+            print('ОШИБКА: неизвестная команда', Command, 'на индексе', index)
+            break
 
 def DrawAxis(size):
     if size==0: return
@@ -65,11 +66,16 @@ def DrawAxis(size):
     for x in range(-1*dr[0]*s,dr[0]*s,s):
         for y in range(-1*dr[1]*s,dr[1]*s,s):
             goto(x,y)
-            dot(size, 'blue')
+            if x==o[0]*s and y==o[1]*s:
+                dot(size*1.5, 'red')
+            elif x==o[0]*s or y==o[1]*s:
+                dot(size*1.2, 'green')
+            else: 
+                dot(size, 'blue')
 
 
 # Дефолтные значения
-s=10; o=[0,0]; r=0; d=1; dr=[0,0]; t=10; debug=0
+s=10; o=[0,0]; r=0; d=3; dr=[10,10]; t=10; debug=0; Commands=[]
 
 
 while True:
@@ -80,27 +86,28 @@ while True:
 
     for el in UserInput:
         el=el.split('=')
-        match el[0]:
-            case 's':
-                s = int(el[1])
-            case 'o':
-                o = el[1].split(',')
-                o = [int(p) for p in o]
-            case 'r':
-                r = int(el[1])
-            case 'd':
-                d = int(el[1])
-            case 'dr':
-                dr = el[1].split(',')
-                dr = [abs(int(p)) for p in dr]
-            case 't':
-                t = int(el[1])
-            case 'debug':
-                debug = int(el[1])
-            case 'reset':
-                s=10; o=[0,0]; r=0; d=3; dr=[10,10]; t=10; debug=0
-            case _:
-                if debug==1: print('[D] [W] Неизвестный параметр',el[0],'пропускаем')
+
+        el0=el[0]
+        if el0 == 's':
+            s = int(el[1])
+        elif el0 == 'o':
+            o = el[1].split(',')
+            o = [int(p) for p in o]
+        elif el0 == 'r':
+            r = int(el[1])
+        elif el0 == 'd':
+            d = int(el[1])
+        elif el0 == 'dr':
+            dr = el[1].split(',')
+            dr = [abs(int(p)) for p in dr]
+        elif el0 == 't':
+            t = int(el[1])
+        elif el0 == 'debug':
+            debug = int(el[1])
+        elif el0 == 'reset':
+            s=10; o=[0,0]; r=0; d=3; dr=[10,10]; t=10; debug=0
+        else:
+            if debug==1: print('[D] [W] Неизвестный параметр',el[0],'пропускаем')
 
     UserInput = input()
     if UserInput:
@@ -115,9 +122,9 @@ while True:
     else:
         tracer(t,0) #альтернативный метод побыстрее
 
-    right(r); up(); goto(o[0]*s,o[1]*s); down()
+    left(r); up(); goto(o[0]*s,o[1]*s); down()
 
-    CommandsSolver(Commands)
+    if Commands: CommandsSolver(Commands)
     if debug==1: print('[D] Конец программы')
 
     DrawAxis(d)
