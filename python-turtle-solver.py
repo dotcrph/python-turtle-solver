@@ -107,7 +107,7 @@ def CommandsSolver(Commands, Depth=0):
                     BracketCounter -= 1
 
                 if BracketCounter == 0:
-                    IteratedCommands = IteratedCommands[:i] # Проверить правильно ли обрезается список
+                    IteratedCommands = IteratedCommands[:i]
                     break
             else:
                 Panic(f'Незакрытая скобка после ...[ {" ".join(IteratedCommands)}')
